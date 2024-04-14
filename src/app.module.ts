@@ -3,6 +3,15 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import {
+  Admin,
+  FeedItem,
+  News,
+  Newsfeed,
+  School,
+  Subscription,
+  User,
+} from './entities';
 
 @Module({
   imports: [
@@ -14,7 +23,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [],
+      entities: [Admin, FeedItem, News, Newsfeed, School, Subscription, User],
       synchronize: false,
       logging: process.env.NODE_ENV !== 'production',
       keepConnectionAlive: true,
