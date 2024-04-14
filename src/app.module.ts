@@ -12,6 +12,7 @@ import {
   Subscription,
   User,
 } from './entities';
+import { AdminsModule } from './admins/admins.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import {
       keepConnectionAlive: true,
       charset: 'utf8mb4',
     }),
+    AdminsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
