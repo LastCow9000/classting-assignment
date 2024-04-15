@@ -14,6 +14,7 @@ import {
 } from './entities';
 import { AdminsModule } from './admins/admins.module';
 import { UsersModule } from './users/users.module';
+import { SchoolsModule } from './schools/schools.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { UsersModule } from './users/users.module';
     }),
     AdminsModule,
     UsersModule,
+    SchoolsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

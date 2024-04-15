@@ -62,6 +62,10 @@ export class AdminsService {
     return this.adminRepository.findOne({ where: { email } });
   }
 
+  findAdminById(id: number) {
+    return this.adminRepository.findOne({ where: { id } });
+  }
+
   getAccessToken(id: number, email: string) {
     const payload = {
       id,

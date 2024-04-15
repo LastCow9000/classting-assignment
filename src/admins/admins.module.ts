@@ -10,5 +10,6 @@ import { JwtAdminStrategy } from 'src/auth/strategies/jwt-admin.strategy';
   imports: [TypeOrmModule.forFeature([Admin]), JwtModule.register({})],
   controllers: [AdminsController],
   providers: [AdminsService, JwtAdminStrategy],
+  exports: [AdminsService],
 })
 export class AdminsModule {}
