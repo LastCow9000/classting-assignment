@@ -11,6 +11,7 @@ import { Repository } from 'typeorm';
 import bcrypt from 'bcrypt';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { LoginAdminDto } from './dto/login-admin.dto';
+import { ROLE } from 'src/constant/role';
 
 @Injectable()
 export class AdminsService {
@@ -65,7 +66,7 @@ export class AdminsService {
     const payload = {
       id,
       email,
-      isAdmin: true,
+      role: ROLE.ADMIN,
     };
 
     return this.jwtService.sign(payload, {

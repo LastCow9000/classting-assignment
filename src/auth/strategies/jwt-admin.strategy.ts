@@ -2,6 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { ROLE } from 'src/constant/role';
 
 @Injectable()
 export class JwtAdminStrategy extends PassportStrategy(Strategy, 'admin') {
@@ -14,7 +15,7 @@ export class JwtAdminStrategy extends PassportStrategy(Strategy, 'admin') {
   }
 
   async validate(payload: any) {
-    if (!payload.isAdmin) {
+    if (payload.role !== ROLE.ADMIN) {
       throw new ForbiddenException('관리자가 아닙니다.');
     }
 
