@@ -39,4 +39,16 @@ export class SubscriptionsController {
   ) {
     return this.subscriptionsService.unsubscribeSchool(schoolId, user.id);
   }
+
+  @Get('/:school_id/news')
+  @UseGuards(JwtUserGuard)
+  getSubscribedSchoolNews(
+    @Param('school_id', ParseIntPipe) schoolId: number,
+    @User() user,
+  ) {
+    return this.subscriptionsService.findNewsBySubscribedSchool(
+      schoolId,
+      user.id,
+    );
+  }
 }

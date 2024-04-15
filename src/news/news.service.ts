@@ -44,6 +44,13 @@ export class NewsService {
     return newsId;
   }
 
+  findNewsBySchool(schoolId: number) {
+    return this.newsRepository.find({
+      where: { school: { id: schoolId } },
+      order: { createdAt: 'desc' },
+    });
+  }
+
   async validateManagedSchool(adminId: number) {
     const admin = await this.adminsService.findAdminById(adminId);
     if (!admin.managedSchool) {

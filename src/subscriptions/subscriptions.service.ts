@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Subscription } from 'src/entities';
+import { NewsService } from 'src/news/news.service';
 import { SchoolsService } from 'src/schools/schools.service';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
@@ -17,6 +18,7 @@ export class SubscriptionsService {
     private readonly subscriptionRepository: Repository<Subscription>,
     private readonly schoolsService: SchoolsService,
     private readonly usersService: UsersService,
+    private readonly newsService: NewsService,
   ) {}
 
   async subscribeSchool(schoolId: number, userId: number) {
@@ -48,19 +50,19 @@ export class SubscriptionsService {
 
   async unsubscribeSchool(schoolId: number, userId: number) {
     const school = await this.validateSchool(schoolId);
-    const existSubscription = await this.subscriptionRepository.findOne({
-      where: { schoolId, userId },
-    });
-    if (!existSubscription) {
-      throw new BadRequestException(
-        '현재 해당 학교 페이지를 구독하고 있지 않습니다.',
-      );
-    }
+    await this.validateSubscription(schoolId, userId);
 
     const user = await this.usersService.findUserById(userId);
     await this.subscriptionRepository.delete({ school, user });
 
     return schoolId;
+  }
+
+  async findNewsBySubscribedSchool(schoolId: number, userId: number) {
+    await this.validateSchool(schoolId);
+    await this.validateSubscription(schoolId, userId);
+
+    return await this.newsService.findNewsBySchool(schoolId);
   }
 
   async validateSchool(schoolId: number) {
@@ -70,5 +72,16 @@ export class SubscriptionsService {
     }
 
     return school;
+  }
+
+  async validateSubscription(schoolId: number, userId: number) {
+    const existSubscription = await this.subscriptionRepository.findOne({
+      where: { schoolId, userId },
+    });
+    if (!existSubscription) {
+      throw new BadRequestException(
+        '현재 해당 학교 페이지를 구독하고 있지 않습니다.',
+      );
+    }
   }
 }
