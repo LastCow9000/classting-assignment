@@ -25,6 +25,7 @@ export class Admin extends BaseEntity {
   @OneToOne(() => School, (school) => school.admin, {
     nullable: true,
     onDelete: 'SET NULL',
+    eager: true,
   })
   managedSchool: School;
 }
