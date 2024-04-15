@@ -1,6 +1,7 @@
 import { Column, Entity, OneToOne } from 'typeorm';
 import { BaseEntity, School } from './';
 import { IsEmail, IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Admin extends BaseEntity {
@@ -17,6 +18,7 @@ export class Admin extends BaseEntity {
   @IsNotEmpty()
   @IsString()
   @MaxLength(16)
+  @Exclude({ toPlainOnly: true })
   @Column()
   password: string;
 
