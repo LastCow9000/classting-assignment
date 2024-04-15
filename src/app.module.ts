@@ -13,6 +13,7 @@ import {
   User,
 } from './entities';
 import { AdminsModule } from './admins/admins.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -25,12 +26,13 @@ import { AdminsModule } from './admins/admins.module';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
       entities: [Admin, FeedItem, News, Newsfeed, School, Subscription, User],
-      synchronize: false,
+      synchronize: true,
       logging: process.env.NODE_ENV !== 'production',
       keepConnectionAlive: true,
       charset: 'utf8mb4',
     }),
     AdminsModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
