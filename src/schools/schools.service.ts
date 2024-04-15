@@ -41,7 +41,6 @@ export class SchoolsService {
   findSchoolById(id: number) {
     return this.schoolRepository.findOne({
       where: { id },
-      // relations: ['admin', 'news', 'subscriptions'], //@todo: test후 지우기
     });
   }
 }
