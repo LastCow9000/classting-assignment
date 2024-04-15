@@ -37,4 +37,11 @@ export class SchoolsService {
 
     return await this.schoolRepository.save(school);
   }
+
+  findSchoolById(id: number) {
+    return this.schoolRepository.findOne({
+      where: { id },
+      // relations: ['admin', 'news', 'subscriptions'], //@todo: test후 지우기
+    });
+  }
 }

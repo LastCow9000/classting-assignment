@@ -62,6 +62,10 @@ export class UsersService {
     return this.userRepository.findOne({ where: { email } });
   }
 
+  findUserById(id: number) {
+    return this.userRepository.findOne({ where: { id } });
+  }
+
   getAccessToken(id: number, email: string) {
     const payload = {
       id,

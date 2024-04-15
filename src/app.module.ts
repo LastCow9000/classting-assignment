@@ -17,6 +17,7 @@ import { UsersModule } from './users/users.module';
 import { SchoolsModule } from './schools/schools.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { NewsModule } from './news/news.module';
+import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { NewsModule } from './news/news.module';
     UsersModule,
     SchoolsModule,
     NewsModule,
+    SubscriptionsModule,
   ],
   controllers: [AppController],
   providers: [

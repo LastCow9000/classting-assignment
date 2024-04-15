@@ -9,5 +9,6 @@ import { AdminsModule } from 'src/admins/admins.module';
   imports: [TypeOrmModule.forFeature([School]), AdminsModule],
   controllers: [SchoolsController],
   providers: [SchoolsService],
+  exports: [SchoolsService],
 })
 export class SchoolsModule {}
