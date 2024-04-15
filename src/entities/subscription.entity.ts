@@ -1,13 +1,30 @@
-import { Entity, ManyToOne } from 'typeorm';
-import { School, User, BaseEntity } from './';
+import {
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryColumn,
+} from 'typeorm';
+import { School, User } from './';
 
 @Entity()
-export class Subscription extends BaseEntity {
-  @ManyToOne(() => User, (user) => user.subscriptions, { onDelete: 'CASCADE' })
+export class Subscription {
+  @PrimaryColumn()
+  userId: number;
+
+  @PrimaryColumn()
+  schoolId: number;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @ManyToOne(() => User, (user) => user.subscriptions)
+  @JoinColumn()
   user: User;
 
   @ManyToOne(() => School, (school) => school.subscriptions, {
     onDelete: 'CASCADE',
   })
+  @JoinColumn()
   school: School;
 }
