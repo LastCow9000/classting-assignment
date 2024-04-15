@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   ParseIntPipe,
   Post,
   UseGuards,
@@ -20,5 +21,11 @@ export class SubscriptionsController {
     @User() user,
   ) {
     return this.subscriptionsService.subscribeSchool(schoolId, user.id);
+  }
+
+  @Get()
+  @UseGuards(JwtUserGuard)
+  getSubscriptions(@User() user) {
+    return this.subscriptionsService.findAllSubscriptions(user.id);
   }
 }

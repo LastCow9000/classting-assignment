@@ -39,4 +39,13 @@ export class SubscriptionsService {
 
     return await this.subscriptionRepository.save(subscription);
   }
+
+  async findAllSubscriptions(userId: number) {
+    return await this.subscriptionRepository.find({
+      where: { userId },
+      select: ['createdAt'],
+      relations: ['school'],
+      order: { createdAt: 'desc' },
+    });
+  }
 }
