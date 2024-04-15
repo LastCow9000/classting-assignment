@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
   ParseIntPipe,
   Post,
   UseGuards,
@@ -27,5 +29,14 @@ export class SubscriptionsController {
   @UseGuards(JwtUserGuard)
   getSubscriptions(@User() user) {
     return this.subscriptionsService.findAllSubscriptions(user.id);
+  }
+
+  @Delete('/:school_id')
+  @UseGuards(JwtUserGuard)
+  unsubscribeSchool(
+    @Param('school_id', ParseIntPipe) schoolId: number,
+    @User() user,
+  ) {
+    return this.subscriptionsService.unsubscribeSchool(schoolId, user.id);
   }
 }

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -26,14 +27,10 @@ export class SubscriptionsService {
       throw new ConflictException('이미 구독 되었습니다.');
     }
 
-    const school = await this.schoolsService.findSchoolById(schoolId);
-    if (!school) {
-      throw new NotFoundException('존재하지 않는 학교 페이지 입니다.');
-    }
-
+    const school = await this.validateSchool(schoolId);
     const user = await this.usersService.findUserById(userId);
     const subscription = this.subscriptionRepository.create({
-      school: school,
+      school,
       user,
     });
 
@@ -47,5 +44,31 @@ export class SubscriptionsService {
       relations: ['school'],
       order: { createdAt: 'desc' },
     });
+  }
+
+  async unsubscribeSchool(schoolId: number, userId: number) {
+    const school = await this.validateSchool(schoolId);
+    const existSubscription = await this.subscriptionRepository.findOne({
+      where: { schoolId, userId },
+    });
+    if (!existSubscription) {
+      throw new BadRequestException(
+        '현재 해당 학교 페이지를 구독하고 있지 않습니다.',
+      );
+    }
+
+    const user = await this.usersService.findUserById(userId);
+    await this.subscriptionRepository.delete({ school, user });
+
+    return schoolId;
+  }
+
+  async validateSchool(schoolId: number) {
+    const school = await this.schoolsService.findSchoolById(schoolId);
+    if (!school) {
+      throw new NotFoundException('존재하지 않는 학교 페이지 입니다.');
+    }
+
+    return school;
   }
 }
