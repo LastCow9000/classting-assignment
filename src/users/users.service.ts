@@ -11,7 +11,7 @@ import { Repository } from 'typeorm';
 import bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
-import { ROLE } from 'src/constant/role';
+import { ROLE } from 'src/common/constant/role';
 
 @Injectable()
 export class UsersService {
