@@ -24,18 +24,20 @@ export class NewsService {
     return await this.newsRepository.save(news);
   }
 
+  async updateNews({ newsId, updateNewsDto, adminId }) {
+    await this.validateAuthorization(newsId, adminId);
+
+    if (updateNewsDto.title || updateNewsDto.content) {
+      await this.newsRepository.update(newsId, {
+        ...updateNewsDto,
+      });
+
+      return newsId;
+    }
+  }
+
   async deleteNews(newsId: number, adminId: number) {
-    const school = await this.validateManagedSchool(adminId);
-    const existNews = await this.newsRepository.findOne({
-      where: { id: newsId },
-      relations: ['school'],
-    });
-    if (!existNews) {
-      throw new NotFoundException('해당하는 소식이 존재하지 않습니다.');
-    }
-    if (existNews.school.id !== school.id) {
-      throw new ForbiddenException('다른 학교의 소식은 삭제할 수 없습니다.');
-    }
+    await this.validateAuthorization(newsId, adminId);
 
     await this.newsRepository.delete(newsId);
 
@@ -51,5 +53,27 @@ export class NewsService {
     }
 
     return admin.managedSchool;
+  }
+
+  async validateNews(newsId: number) {
+    const existNews = await this.newsRepository.findOne({
+      where: { id: newsId },
+      relations: ['school'],
+    });
+    if (!existNews) {
+      throw new NotFoundException('해당하는 소식이 존재하지 않습니다.');
+    }
+
+    return existNews;
+  }
+
+  async validateAuthorization(newsId: number, adminId: number) {
+    const school = await this.validateManagedSchool(adminId);
+    const existNews = await this.validateNews(newsId);
+    if (existNews.school.id !== school.id) {
+      throw new ForbiddenException(
+        '다른 학교의 소식은 수정, 삭제할 수 없습니다.',
+      );
+    }
   }
 }
