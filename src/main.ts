@@ -17,7 +17,10 @@ async function bootstrap() {
     .setTitle('클래스팅 백엔드 과제')
     .setDescription('Classting Newsfeed Api Docs')
     .setVersion('1.0')
-    .addCookieAuth('connect.sid')
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'Token' },
+      'access-token',
+    )
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

@@ -6,6 +6,7 @@ import {
   PrimaryColumn,
 } from 'typeorm';
 import { School, User } from './';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export class Subscription {
@@ -15,6 +16,10 @@ export class Subscription {
   @PrimaryColumn()
   schoolId: number;
 
+  @ApiProperty({
+    example: '2024-04-16 04:20:45.241551',
+    description: '구독 날짜',
+  })
   @CreateDateColumn()
   createdAt: Date;
 
