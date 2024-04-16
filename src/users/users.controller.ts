@@ -1,7 +1,10 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { AdminsService } from './admins.service';
-import { CreateAdminDto } from './dto/create-admin.dto';
-import { LoginAdminDto } from './dto/login-admin.dto';
+import { Body, Controller, Post, UseInterceptors } from '@nestjs/common';
+import { UsersService } from './users.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import { LoginUserDto } from './dto/login-user.dto';
+import { TransactionInterceptor } from 'src/common/interceptors/transaction.interceptor';
+import { QR } from 'src/common/decorators/query-runner.decorator';
+import { QueryRunner } from 'typeorm';
 import {
   ApiConflictResponse,
   ApiCreatedResponse,
@@ -10,14 +13,14 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-@ApiTags('ADMINS')
-@Controller('api/v1/admins')
-export class AdminsController {
-  constructor(private readonly adminsService: AdminsService) {}
+@ApiTags('USERS')
+@Controller('api/v1/users')
+export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
 
   @ApiOperation({
-    summary: '어드민 회원가입',
-    description: '어드민 전용 회원 가입',
+    summary: '학생 회원가입',
+    description: '학생 전용 회원 가입',
   })
   @ApiCreatedResponse({
     description: '액세스 토큰 반환',
@@ -29,7 +32,7 @@ export class AdminsController {
     },
   })
   @ApiConflictResponse({
-    description: '중복된 이메일',
+    description: '중복된 이메일로 충돌 발생',
     schema: {
       example: {
         message: '이미 존재하는 email 입니다.',
@@ -39,13 +42,17 @@ export class AdminsController {
     },
   })
   @Post()
-  createAdmin(@Body() createAdminDto: CreateAdminDto) {
-    return this.adminsService.createAdmin(createAdminDto);
+  @UseInterceptors(TransactionInterceptor)
+  createAdmin(
+    @Body() createUserDto: CreateUserDto,
+    @QR() queryRunner: QueryRunner,
+  ) {
+    return this.usersService.createUser(createUserDto, queryRunner);
   }
 
   @ApiOperation({
-    summary: '어드민 로그인',
-    description: '어드민 전용 로그인',
+    summary: '학생 로그인',
+    description: '학생 전용 로그인',
   })
   @ApiCreatedResponse({
     description: '액세스 토큰 반환',
@@ -60,14 +67,14 @@ export class AdminsController {
     description: '잘못된 이메일 혹은 비밀번호 입력',
     schema: {
       example: {
-        message: '존재하지 않는 관리자입니다.',
+        message: '잘못된 비밀번호 입니다.',
         error: 'Unauthorized',
         statusCode: 401,
       },
     },
   })
   @Post('/login')
-  async login(@Body() loginAdminDto: LoginAdminDto) {
-    return await this.adminsService.login(loginAdminDto);
+  async login(@Body() loginUserDto: LoginUserDto) {
+    return await this.usersService.login(loginUserDto);
   }
 }
