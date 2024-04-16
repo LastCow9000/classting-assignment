@@ -6,12 +6,12 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Admin } from 'src/entities';
+import { Admin } from '../entities';
 import { Repository } from 'typeorm';
 import bcrypt from 'bcrypt';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { LoginAdminDto } from './dto/login-admin.dto';
-import { ROLE } from 'src/common/constant/role';
+import { ROLE } from '../common/constant/role';
 
 @Injectable()
 export class AdminsService {
