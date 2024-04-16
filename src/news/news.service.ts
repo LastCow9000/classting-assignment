@@ -1,27 +1,53 @@
 import {
   ForbiddenException,
+  Inject,
   Injectable,
   NotFoundException,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { News } from 'src/entities';
-import { Repository } from 'typeorm';
+import { FeedItem, News } from 'src/entities';
+import { QueryRunner, Repository } from 'typeorm';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { AdminsService } from 'src/admins/admins.service';
+import { SubscriptionsService } from 'src/subscriptions/subscriptions.service';
 
 @Injectable()
 export class NewsService {
   constructor(
     @InjectRepository(News)
     private readonly newsRepository: Repository<News>,
+    @InjectRepository(FeedItem)
+    private readonly feedItemRepository: Repository<FeedItem>,
     private readonly adminsService: AdminsService,
+    @Inject(forwardRef(() => SubscriptionsService))
+    private readonly subscriptionsService: SubscriptionsService,
   ) {}
 
-  async createNews({ title, content }: CreateNewsDto, adminId: number) {
-    const school = await this.validateManagedSchool(adminId);
-    const news = this.newsRepository.create({ title, content, school });
+  async createNews(
+    { title, content }: CreateNewsDto,
+    adminId: number,
+    queryRunner: QueryRunner,
+  ) {
+    const qrNewsRepository = this.getNewsRepository(queryRunner);
+    const qrFeedItemRepository = this.getFeedItemRepository(queryRunner);
 
-    return await this.newsRepository.save(news);
+    const school = await this.validateManagedSchool(adminId);
+    const news = qrNewsRepository.create({ title, content, school });
+    const savedNews = await qrNewsRepository.save(news);
+
+    const subscriptions =
+      await this.subscriptionsService.findSubscriptionsBySchool(school.id);
+    const newsfeeds = subscriptions.map(
+      (subscription) => subscription.user.newsfeed,
+    );
+    await Promise.all(
+      newsfeeds.map((newsfeed) =>
+        qrFeedItemRepository.save({ news: savedNews, newsfeed }),
+      ),
+    );
+
+    return savedNews;
   }
 
   async updateNews({ newsId, updateNewsDto, adminId }) {
@@ -82,5 +108,17 @@ export class NewsService {
         '다른 학교의 소식은 수정, 삭제할 수 없습니다.',
       );
     }
+  }
+
+  getNewsRepository(queryRunner?: QueryRunner) {
+    return queryRunner
+      ? queryRunner.manager.getRepository<News>(News)
+      : this.newsRepository;
+  }
+
+  getFeedItemRepository(queryRunner?: QueryRunner) {
+    return queryRunner
+      ? queryRunner.manager.getRepository<FeedItem>(FeedItem)
+      : this.feedItemRepository;
   }
 }

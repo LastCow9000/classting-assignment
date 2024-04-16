@@ -1,8 +1,10 @@
 import {
   BadRequestException,
   ConflictException,
+  Inject,
   Injectable,
   NotFoundException,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Subscription } from 'src/entities';
@@ -18,6 +20,7 @@ export class SubscriptionsService {
     private readonly subscriptionRepository: Repository<Subscription>,
     private readonly schoolsService: SchoolsService,
     private readonly usersService: UsersService,
+    @Inject(forwardRef(() => NewsService))
     private readonly newsService: NewsService,
   ) {}
 
@@ -63,6 +66,13 @@ export class SubscriptionsService {
     await this.validateSubscription(schoolId, userId);
 
     return await this.newsService.findNewsBySchool(schoolId);
+  }
+
+  findSubscriptionsBySchool(schoolId: number) {
+    return this.subscriptionRepository.find({
+      where: { schoolId },
+      relations: { user: { newsfeed: true } },
+    });
   }
 
   async validateSchool(schoolId: number) {

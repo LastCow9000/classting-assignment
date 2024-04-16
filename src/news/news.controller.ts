@@ -7,12 +7,16 @@ import {
   Patch,
   Post,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { NewsService } from './news.service';
 import { JwtAdminGuard } from 'src/auth/guards/jwt-admin.guard';
 import { User } from 'src/common/decorators/user.decorator';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { UpdateNewsDto } from './dto/update-news.dto';
+import { TransactionInterceptor } from 'src/common/interceptors/transaction.interceptor';
+import { QR } from 'src/common/decorators/query-runner.decorator';
+import { QueryRunner } from 'typeorm';
 
 @Controller('api/v1/schools/news')
 export class NewsController {
@@ -20,8 +24,13 @@ export class NewsController {
 
   @Post()
   @UseGuards(JwtAdminGuard)
-  createNews(@Body() createNewsDto: CreateNewsDto, @User() user) {
-    return this.newsService.createNews(createNewsDto, user.id);
+  @UseInterceptors(TransactionInterceptor)
+  createNews(
+    @Body() createNewsDto: CreateNewsDto,
+    @User() user,
+    @QR() queryRunner: QueryRunner,
+  ) {
+    return this.newsService.createNews(createNewsDto, user.id, queryRunner);
   }
 
   @Patch('/:news_id')
