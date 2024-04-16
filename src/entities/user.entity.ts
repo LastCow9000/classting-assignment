@@ -1,8 +1,9 @@
-import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, Index, OneToMany, OneToOne } from 'typeorm';
 import { BaseEntity, Newsfeed, Subscription } from './';
 import { IsEmail, IsNotEmpty, IsString, MaxLength } from 'class-validator';
 import { Exclude } from 'class-transformer';
 
+@Index(['email'])
 @Entity()
 export class User extends BaseEntity {
   @IsNotEmpty()

@@ -1,8 +1,9 @@
-import { Column, Entity, OneToOne } from 'typeorm';
+import { Column, Entity, Index, OneToOne } from 'typeorm';
 import { BaseEntity, School } from './';
 import { IsEmail, IsNotEmpty, IsString, MaxLength } from 'class-validator';
 import { Exclude } from 'class-transformer';
 
+@Index(['email'])
 @Entity()
 export class Admin extends BaseEntity {
   @IsNotEmpty()

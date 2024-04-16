@@ -1,7 +1,15 @@
-import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { Admin, BaseEntity, News, Subscription } from './';
 import { IsNotEmpty, IsString } from 'class-validator';
 
+@Index(['name', 'region'])
 @Entity()
 export class School extends BaseEntity {
   @IsString()
