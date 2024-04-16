@@ -1,11 +1,11 @@
 import {
   CallHandler,
   ExecutionContext,
+  HttpException,
   Injectable,
-  InternalServerErrorException,
   NestInterceptor,
 } from '@nestjs/common';
-import { Observable, catchError, finalize, tap } from 'rxjs';
+import { Observable, catchError, tap } from 'rxjs';
 import { DataSource } from 'typeorm';
 
 @Injectable()
@@ -29,7 +29,14 @@ export class TransactionInterceptor implements NestInterceptor {
         await queryRunner.rollbackTransaction();
         await queryRunner.release();
 
-        throw new InternalServerErrorException(error.message);
+        throw new HttpException(
+          {
+            message: error.message,
+            error: error.response.error,
+            statusCode: error.response.statusCode || 500,
+          },
+          error.response.statusCode || 500,
+        );
       }),
       tap(async () => {
         await queryRunner.commitTransaction();
