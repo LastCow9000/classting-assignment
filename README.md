@@ -1,5 +1,9 @@
 # 클래스팅 백엔드 과제
 
+## 기술 스택
+
+Nodejs v20.10, Nestjs, typeorm, mysql, docker
+
 ## 실행 방법
 
 1. github repositoy를 clone 합니다.
@@ -45,5 +49,15 @@ http://localhost:3000/api
 
 6. Postman으로 api를 확인합니다.
 
+```bash
+# BaseUrl
+localhost:3000
+```
+
 - 관리자 or 학생 권한이 필요한 api는 user 생성 및 로그인 후 발급되는 토큰을 `Authorization` haeder에 `Bearer {{Token}}`형식으로 넣고 api 요청을 해야 합니다.
 - 인가 문제로 swagger에서는 test가 불가능합니다.
+
+## 특이사항
+
+- 요구 사항에는 없지만 필요하다고 판단하여 `어드민 회원가입`, `어드민 로그인`, `학생 회원가입`, `학생 로그인` 기능을 구현하였습니다.
+  - accessToken 으로만 구현하였습니다.
