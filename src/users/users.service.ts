@@ -84,10 +84,12 @@ export class UsersService {
       role: ROLE.STUDENT,
     };
 
-    return this.jwtService.sign(payload, {
-      secret: this.configService.get('JWT_SECRET'),
-      expiresIn: 3600,
-    });
+    return {
+      accessToken: this.jwtService.sign(payload, {
+        secret: this.configService.get('JWT_SECRET'),
+        expiresIn: 3600,
+      }),
+    };
   }
 
   getUserRepository(queryRunner?: QueryRunner) {

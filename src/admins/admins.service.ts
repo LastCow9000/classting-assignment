@@ -73,9 +73,11 @@ export class AdminsService {
       role: ROLE.ADMIN,
     };
 
-    return this.jwtService.sign(payload, {
-      secret: this.configService.get('JWT_SECRET'),
-      expiresIn: 3600,
-    });
+    return {
+      accessToken: this.jwtService.sign(payload, {
+        secret: this.configService.get('JWT_SECRET'),
+        expiresIn: 3600,
+      }),
+    };
   }
 }
