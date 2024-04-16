@@ -4,7 +4,6 @@ import { IsEmail, IsNotEmpty, IsString, MaxLength } from 'class-validator';
 import { Exclude } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
-@Index(['email'])
 @Entity()
 export class Admin extends BaseEntity {
   @ApiProperty({
