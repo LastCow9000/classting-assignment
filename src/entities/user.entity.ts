@@ -25,6 +25,6 @@ export class User extends BaseEntity {
   @OneToMany(() => Subscription, (subscription) => subscription.user)
   subscriptions: Subscription[];
 
-  @OneToOne(() => Newsfeed, (newsfeed) => newsfeed.user)
+  @OneToOne(() => Newsfeed, (newsfeed) => newsfeed.user, { eager: true })
   newsfeed: Newsfeed;
 }

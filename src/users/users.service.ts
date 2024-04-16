@@ -6,8 +6,8 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/entities';
-import { Repository } from 'typeorm';
+import { Newsfeed, User } from 'src/entities';
+import { QueryRunner, Repository } from 'typeorm';
 import bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -18,12 +18,20 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Newsfeed)
+    private readonly newsfeedRepository: Repository<Newsfeed>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
 
-  async createUser({ email, name, password }: CreateUserDto) {
-    const isExistEmail = await this.userRepository.exists({
+  async createUser(
+    { email, name, password }: CreateUserDto,
+    queryRunner: QueryRunner,
+  ) {
+    const qrUserRepository = this.getUserRepository(queryRunner);
+    const qrNewsRepository = this.getNewsfeedRepository(queryRunner);
+
+    const isExistEmail = await qrUserRepository.exists({
       where: { email },
     });
     if (isExistEmail) {
@@ -31,12 +39,15 @@ export class UsersService {
     }
 
     const hash = await bcrypt.hash(password, 10);
-    const newUser = this.userRepository.create({
+    const newUser = qrUserRepository.create({
       email,
       name,
       password: hash,
     });
-    const savedUser = await this.userRepository.save(newUser);
+    const savedUser = await qrUserRepository.save(newUser);
+
+    const newsfeed = qrNewsRepository.create({ user: newUser });
+    await qrNewsRepository.save(newsfeed);
 
     return this.getAccessToken(savedUser.id, savedUser.email);
   }
@@ -77,5 +88,17 @@ export class UsersService {
       secret: this.configService.get('JWT_SECRET'),
       expiresIn: 3600,
     });
+  }
+
+  getUserRepository(queryRunner?: QueryRunner) {
+    return queryRunner
+      ? queryRunner.manager.getRepository<User>(User)
+      : this.userRepository;
+  }
+
+  getNewsfeedRepository(queryRunner?: QueryRunner) {
+    return queryRunner
+      ? queryRunner.manager.getRepository<Newsfeed>(Newsfeed)
+      : this.newsfeedRepository;
   }
 }
